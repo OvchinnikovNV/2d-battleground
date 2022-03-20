@@ -37,9 +37,13 @@ class Player:
         self.bullets = []
         self.enemies = []
 
+        # Sounds
+        self.sound_shot = pygame.mixer.Sound('../audio/prostoy-vyistrel.wav')
+
 
     def __del__(self):
-        print('Dead', self.id)
+        #print('Dead', self.id)
+        pass
 
 
     def draw(self) -> None:
@@ -73,12 +77,18 @@ class Player:
             for enemy in self.enemies:
                 if bullet.get_rect().colliderect(enemy.get_rect()):
                     enemy.health -= 10
-                    self.bullets.pop(self.bullets.index(bullet))
+                    try:
+                        self.bullets.pop(self.bullets.index(bullet))
+                    except ValueError:
+                        pass
 
             if bullet.in_window() and self.fmap.check_wall(bullet.get_rect()):
                 bullet.draw()
             else:
-                self.bullets.pop(self.bullets.index(bullet))
+                try:
+                    self.bullets.pop(self.bullets.index(bullet))
+                except ValueError:
+                    pass
 
 
     def check_forward(self) -> tuple[float, float]:
@@ -124,6 +134,7 @@ class Player:
         if time.time() - self.last_shoot_time > self.shot_cd:
             self.last_shoot_time = time.time()
             self.bullets.append(Bullet(self.window, self.x + self.radius, self.y + self.radius, self.direction))
+            self.sound_shot.play()
 
 
     def get_rect(self) -> pygame.Rect:
@@ -149,6 +160,4 @@ class Player:
     def kill(self) -> None:
         self.dead = True
         self.bullets.clear()
-        self.bullets = None
         self.enemies.clear()
-        self.enemies = None

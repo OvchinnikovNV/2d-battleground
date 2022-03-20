@@ -3,23 +3,16 @@ import pygame
 from first_map import FirstMap
 from player import Player
 from npc import NPC
-from menu import Menu
 
 
 class Game:
-    def __init__(self) -> None:
+    def __init__(self, window: pygame.Surface) -> None:
+        self.window = window
         self.FPS = 60
-        self.NUM_NPC = 2
+        self.NUM_NPC = 100
         self.bg_color = pygame.Color(20, 20, 20)
         self.clock = pygame.time.Clock()
-        pygame.display.set_caption('My PUBG')
-
-        pygame.init()
-        pygame.font.init()
-        self.window = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-        #self.window = pygame.display.set_mode((800, 600))
-
-        self.menu = Menu(self.window)
+        self.active = True
         
         # game object init
         self.fmap = FirstMap(self.window)
@@ -55,10 +48,7 @@ class Game:
 
 
     def start(self) -> None:
-        while True:
-            if self.menu.active:
-                self.menu.open()
-
+        while self.active:
             for character in self.characters:
                 if character.dead:
                     self.characters.pop(self.characters.index(character))
@@ -72,7 +62,7 @@ class Game:
 
             keys = pygame.key.get_pressed()
             if keys[pygame.K_ESCAPE]:
-                self.menu.active = not self.menu.active
+                self.active = False
 
             if self.player is not None:
                 if keys[pygame.K_LEFT]:
