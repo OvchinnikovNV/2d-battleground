@@ -1,4 +1,5 @@
 import pygame
+import sys
 import math
 import random
 import time
@@ -23,6 +24,7 @@ class Player:
 
         self.view_range = 150  # длина линии прицела
         self.direction = 2 * math.pi / random.randint(2, 10) # направление прицела
+
         self.vision = 150 # радиус обзора (прицелы увеичивают)
         self.turning_speed = 0.05
         self.speed = 3
@@ -90,6 +92,26 @@ class Player:
                     self.bullets.pop(self.bullets.index(bullet))
                 except ValueError:
                     pass
+
+
+    def up(self) -> None:
+        self.y -= self.speed
+        self.set_mouse_direction()
+
+
+    def down(self) -> None:
+        self.y += self.speed
+        self.set_mouse_direction()
+
+
+    def left(self) -> None:
+        self.x -= self.speed
+        self.set_mouse_direction()
+
+
+    def right(self) -> None:
+        self.x += self.speed
+        self.set_mouse_direction()
 
 
     def check_forward(self) -> tuple[float, float]:
@@ -166,3 +188,17 @@ class Player:
 
     def set_settings(self, settings: dict) -> None:
         self.sound_shot.set_volume(settings['sound_vol'])
+
+
+    def set_mouse_direction(self) -> None:
+        default_v = pygame.Vector2(
+            self.get_rect().centerx,
+            self.get_rect().centery + sys.maxsize
+        )
+
+        direction_v = pygame.Vector2(
+            pygame.mouse.get_pos()[0] - self.get_rect().centerx,
+            pygame.mouse.get_pos()[1] - self.get_rect().centery
+        )
+
+        self.direction = -1 * default_v.angle_to(direction_v) * math.pi / 180

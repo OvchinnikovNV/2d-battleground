@@ -10,8 +10,8 @@ class Settings:
 
         self.settings = {
             'num_npc': 1,
-            'music_vol': 1.0,
-            'sound_vol': 1.0
+            'music_vol': 0.1,
+            'sound_vol': 0.5
         }
 
         # Title
