@@ -58,15 +58,9 @@ class Game:
                     del character
 
             for event in pygame.event.get():
-                if pygame.mouse.get_pressed()[0]:
-                    self.player.shot()
-
                 if event.type == pygame.QUIT:
                     sys.exit()
-                elif event.type == pygame.MOUSEBUTTONDOWN:
-                    if event.button == 1:
-                        self.player.shot()
-                elif event.type == pygame.MOUSEMOTION:
+                if self.player is not None and event.type == pygame.MOUSEMOTION:
                     self.player.set_mouse_direction()
 
 
@@ -77,17 +71,13 @@ class Game:
             if self.player is not None:
                 if keys[pygame.K_a]:
                     self.player.left()
-
                 if keys[pygame.K_d]:
                     self.player.right()
-
                 if keys[pygame.K_w]:
                     self.player.up()
-
                 if keys[pygame.K_s]:
                     self.player.down()
-
-                if keys[pygame.K_SPACE]:
+                if pygame.mouse.get_pressed()[0]:
                     self.player.shot()
 
             self.draw()
