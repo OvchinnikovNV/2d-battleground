@@ -6,7 +6,8 @@ from settings import Settings
 
 class Menu:
     def __init__(self) -> None:
-        self.window = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+        #self.window = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+        self.window = pygame.display.set_mode((800, 600))
         self.bg_color = pygame.Color(0, 0, 0)
         self.clock = pygame.time.Clock()
         self.active = True
@@ -45,6 +46,7 @@ class Menu:
 
 
     def open(self) -> None:
+        self.set_settings()
         pygame.mixer.music.play(100)
 
         while True:
