@@ -6,25 +6,25 @@ from npc import NPC
 
 
 class Game:
-    def __init__(self, window: pygame.Surface) -> None:
+    def __init__(self, window: pygame.Surface, settings: dict) -> None:
         self.window = window
         self.FPS = 60
-        self.NUM_NPC = 100
+        self.NUM_NPC = settings['num_npc']
         self.bg_color = pygame.Color(20, 20, 20)
         self.clock = pygame.time.Clock()
-        self.active = True
+        self.active = False
         
         # game object init
         self.fmap = FirstMap(self.window)
         self.characters = []
 
         # Player
-        self.player = Player(self.window, self.fmap)
+        self.player = Player(self.window, self.fmap, settings)
         self.characters.append(self.player)
 
         # NPC
         for _ in range(self.NUM_NPC):
-            self.characters.append(NPC(self.window, self.fmap))
+            self.characters.append(NPC(self.window, self.fmap, settings))
 
         for character in self.characters:
             character.init_enemies(self.characters)
@@ -48,6 +48,7 @@ class Game:
 
 
     def start(self) -> None:
+        self.active = True
         while self.active:
             for character in self.characters:
                 if character.dead:
@@ -81,3 +82,8 @@ class Game:
                     self.player.shot()
 
             self.draw()
+
+
+    def set_settings(self, settings: dict) -> None:
+        for character in self.characters:
+            character.set_settings(settings)

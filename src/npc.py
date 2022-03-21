@@ -6,8 +6,8 @@ from player import Player
 
 
 class NPC(Player):
-    def __init__(self, window: pygame.Surface, fmap: FirstMap) -> None:
-        super().__init__(window, fmap)
+    def __init__(self, window: pygame.Surface, fmap: FirstMap, settings: dict) -> None:
+        super().__init__(window, fmap, settings)
         self.color = (255, 0, 0)
         self.enemy_rect = None
         self.action = 'start'

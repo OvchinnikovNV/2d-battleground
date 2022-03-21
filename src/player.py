@@ -7,7 +7,7 @@ from bullet import Bullet
 
 
 class Player:
-    def __init__(self, window: pygame.Surface, fmap: FirstMap) -> None:
+    def __init__(self, window: pygame.Surface, fmap: FirstMap, settings: dict) -> None:
         self.id = id(self)
         self.window = window
         self.fmap = fmap
@@ -39,6 +39,7 @@ class Player:
 
         # Sounds
         self.sound_shot = pygame.mixer.Sound('../audio/prostoy-vyistrel.wav')
+        self.sound_shot.set_volume(settings['sound_vol'])
 
 
     def __del__(self):
@@ -161,3 +162,7 @@ class Player:
         self.dead = True
         self.bullets.clear()
         self.enemies.clear()
+
+
+    def set_settings(self, settings: dict) -> None:
+        self.sound_shot.set_volume(settings['sound_vol'])

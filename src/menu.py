@@ -1,16 +1,19 @@
 import sys
 import pygame
 from game import Game
+from settings import Settings
 
 
 class Menu:
     def __init__(self) -> None:
         self.window = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-        #self.window = pygame.display.set_mode((800, 600))
+        self.bg_color = pygame.Color(0, 0, 0)
         self.clock = pygame.time.Clock()
-        self.FPS = 30
         self.active = True
         self.current_game = None
+
+        # Settings
+        self.settings = Settings(self.window)
 
         # Music
         pygame.mixer.music.load('../audio/tunetank.com_5394_rock-spot_by_nuclear-wave.mp3')
@@ -42,7 +45,7 @@ class Menu:
 
 
     def open(self) -> None:
-        #pygame.mixer.music.play(100)
+        pygame.mixer.music.play(100)
 
         while True:
             pygame.mixer.music.unpause()
@@ -55,16 +58,19 @@ class Menu:
                         if self.btn_play.collidepoint(event.pos):
                             pygame.mixer.music.pause()
                             if self.current_game is None:
-                                self.current_game = Game(self.window)
+                                self.current_game = Game(self.window, self.settings.export())
                                 self.current_game.start()
                             else:
-                                self.current_game.active = True
                                 self.current_game.start()
                         
                         if self.btn_new_game.collidepoint(event.pos):
                             pygame.mixer.music.pause()
-                            self.current_game = Game(self.window)
+                            self.current_game = Game(self.window, self.settings.export())
                             self.current_game.start()
+
+                        if self.btn_settings.collidepoint(event.pos):
+                            self.settings.open()
+                            self.set_settings()
 
                         if self.btn_exit.collidepoint(event.pos):
                             sys.exit()
@@ -73,9 +79,9 @@ class Menu:
 
 
     def draw(self) -> None:
-        self.clock.tick(self.FPS)
+        self.clock.tick(30)
 
-        self.window.fill((0,0,0))
+        self.window.fill(self.bg_color)
 
         # Title
         msg_title = pygame.font.Font(None, self.title_font_size).render('BATTLEGROUND', True, self.title_font_color)
@@ -96,3 +102,8 @@ class Menu:
         text = pygame.font.Font(None, self.font_size).render(btn_name, True, self.font_color)
         self.window.blit(text, (btn_rect.centerx - text.get_width() / 2, \
                                 btn_rect.centery - text.get_height() / 2))
+
+
+    def set_settings(self) -> None:
+        tmp = self.settings.export()
+        pygame.mixer.music.set_volume(tmp['music_vol'])
