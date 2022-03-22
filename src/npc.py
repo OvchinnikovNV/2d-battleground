@@ -8,7 +8,9 @@ from player import Player
 class NPC(Player):
     def __init__(self, window: pygame.Surface, fmap: FirstMap, settings: dict) -> None:
         super().__init__(window, fmap, settings)
+        self.type = 'npc'
         self.color = (255, 0, 0)
+        self.turning_speed = 0.1
         self.enemy_rect = None
         self.action = 'start'
         self.actions = {
@@ -16,12 +18,14 @@ class NPC(Player):
             'turn_to_enemy': self.turn_to_enemy,
             'fire': self.fire,
             'move': self.move,
-            'forward': self.forward,
-            'backward': self.backward,
+            'up': self.up,
+            'down': self.down,
+            'right': self.right,
+            'left': self.left,
             'rturn': self.rturn,
             'lturn': self.lturn
         }
-        self.movements = ('forward', 'backward', 'rturn', 'lturn')
+        self.movements = ('up', 'down', 'left', 'right', 'rturn', 'lturn')
         self.current_movement = None
         self.movement_counter = 0
         self.movement_number = 0
@@ -53,8 +57,8 @@ class NPC(Player):
 
         try:
             for player in players:
-                if vision_rect.colliderect(player.get_rect()):
-                    return player.get_rect()
+                if vision_rect.colliderect(player.rect):
+                    return player.rect
         except TypeError:
             return None
 
@@ -63,21 +67,19 @@ class NPC(Player):
 
     def turn_to_enemy(self) -> None:
         try:
-            m_rect = self.get_rect()
-
             # (x, y) - direction line point
             dir_point = (
-                m_rect.centerx + self.view_range * math.sin(self.direction),
-                m_rect.centery + self.view_range * math.cos(self.direction)
+                self.rect.centerx + self.vision * math.sin(self.direction),
+                self.rect.centery + self.vision * math.cos(self.direction)
             )
 
             # direction vector
-            me_dx = m_rect.centerx - (dir_point[0])
-            me_dy = m_rect.centery - (dir_point[1])
+            me_dx = self.rect.centerx - (dir_point[0])
+            me_dy = self.rect.centery - (dir_point[1])
 
             # vector to enemy
-            enemy_dx = m_rect.centerx - self.enemy_rect.centerx
-            enemy_dy = m_rect.centery - self.enemy_rect.centery
+            enemy_dx = self.rect.centerx - self.enemy_rect.centerx
+            enemy_dy = self.rect.centery - self.enemy_rect.centery
 
             cos_angle = ((me_dx * enemy_dx) + (me_dy * enemy_dy)) \
                 / math.sqrt(me_dx ** 2 + me_dy ** 2) / math.sqrt(enemy_dx ** 2 + enemy_dy ** 2)
@@ -103,15 +105,9 @@ class NPC(Player):
     def move(self) -> None:
         if self.movement_counter == 0:
             # продолжительность движения
-            self.movement_number = random.randint(5, random.randint(20, 50))
-            # если был поворот, то следующее - движение
-            if self.prev_move_is_turn:
-                self.current_movement = self.movements[random.randint(0, 1)]
-                self.prev_move_is_turn = False
-            else:
-                self.current_movement = self.movements[random.randint(0, len(self.movements) - 1)]
-                if self.current_movement.find('turn') != -1:
-                    self.prev_move_is_turn = True
+            self.movement_number = random.randint(5, random.randint(20, 30))
+            self.current_movement = self.movements[random.randint(0, len(self.movements) - 1)]
+
 
         if self.movement_counter > self.movement_number:
             self.movement_number = 0
@@ -123,21 +119,31 @@ class NPC(Player):
         self.action = self.current_movement
 
 
-    def forward(self) -> None:
-        super().forward()
+    def up(self) -> None:
+        super().up()
         self.action = 'start'
 
 
-    def backward(self) -> None:
-        super().backward()
+    def down(self) -> None:
+        super().down()
+        self.action = 'start'
+
+
+    def left(self) -> None:
+        super().left()
+        self.action = 'start'
+
+
+    def right(self) -> None:
+        super().right()
         self.action = 'start'
 
 
     def lturn(self) -> None:
-        super().lturn()
+        self.direction += self.turning_speed
         self.action = 'start'
 
 
     def rturn(self) -> None:
-        super().rturn()
+        self.direction -= self.turning_speed
         self.action = 'start'
